@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="py-4 px-4 vw-30 position-absolute top-50 start-50 translate-middle rounded-4 bg-secondary">
+    <form action="login" method="post">
+        <div class="container">
+            <div class="row">
+                <label for="usernameInput" class="form-label">Username</label>
+                <input type="text"
+                       class="form-control"
+                       id="usernameInput"
+                       name="username">
+            </div>
+
+            <div class="row">
+                <label for="passwordInput" class="form-label">Password</label>
+                <input type="password"
+                       class="form-control"
+                       id="passwordInput"
+                       name="password">
+            </div>
+
+            <div class="row mt-4">
+                <input type="submit" class="btn btn-primary" value="Login">
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

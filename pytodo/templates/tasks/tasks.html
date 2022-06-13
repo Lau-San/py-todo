@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="new-task-form" class="mw-100 pt-4 pb-1 px-3 bg-secondary">
+    <form action="add" method="post">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control"
+                   placeholder="Task description"
+                   name="new_task_description"
+                   aria-label="Task description"
+                   aria-describedby="add-task">
+            <input class="btn btn-primary"
+                   type="submit"
+                   id="add-task"
+                   value="ADD">
+        </div>
+    </form>
+</div>
+<div id="task-list" class="px-3 pt-2">
+    <ul class="list-group">
+        {% for task in g.tasks %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>{{ task['description'] }}</div>
+            <div class="btn-group"
+                 role="group"
+                 aria-label="basic mixed styles example">
+                <a class="btn btn-outline-success" href="{{ url_for('tasks.complete') }}">
+                    DONE
+                </a>
+                <button type="button" class="btn btn-outline-danger">delete</button>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
