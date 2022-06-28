@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PyTodo</title>
+    <title>{% block title %}{% endblock %}</title>
     <!-- BOOTSTRAP 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
           rel="stylesheet"
@@ -11,23 +11,35 @@
           crossorigin="anonymous">
 </head>
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
-            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 
     <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">PyTodo</span>
-            {% if g.user %}
+            <div class="navbar-brand mb-0 h2">PyTodo</div>
             <div>
-                <span class="navbar-text align-middle me-2 h5">{{ g.user['username'] }}</span>
+                {% if g.user %}
+                <span class="navbar-text align-middle h5 me-2">{{ g.user['username'] }}</span>
                 <a href="{{ url_for('auth.logout') }}">
                     <button class="btn btn-outline-danger">Log Out</button>
                 </a>
+                {% else %}
+                <a class="text-decoration-none" href="{{ url_for('auth.login') }}">
+                    <button class="btn btn-outline-primary">Log In</button>
+                </a>
+                <a class="text-decoration-none" href="{{ url_for('auth.register') }}">
+                    <button class="btn btn-outline-primary">Sign Up</button>
+                </a>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </nav>
+
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-danger alert-dismissible fade show mx-2 my-2" role="alert">
+        {{ message }}
+        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 
     {% block content %}
     {% endblock%}

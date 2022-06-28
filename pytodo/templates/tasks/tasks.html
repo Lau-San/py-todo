@@ -1,36 +1,107 @@
 {% extends "base.html" %}
 
+{% block title %}Tasks{% endblock %}
+
 {% block content %}
-<div id="new-task-form" class="mw-100 pt-4 pb-1 px-3 bg-secondary">
-    <form action="add" method="post">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control"
-                   placeholder="Task description"
-                   name="new_task_description"
-                   aria-label="Task description"
-                   aria-describedby="add-task">
-            <input class="btn btn-primary"
-                   type="submit"
-                   id="add-task"
-                   value="ADD">
+<div class="mt-4 mx-5">
+    <div class="d-flex flex-row align-items-center">
+        <div class="flex-fill">
+            <h1 class="fw-bold">To Do</h1>
         </div>
-    </form>
+        <button type="button" class="btn btn-primary mx-3 fs-5 fw-bold" data-bs-toggle="modal" data-bs-target="#create-task-dialog">
+            New
+        </button>
+    </div>
+    <div id="todo-list">
+        <ul class="list-group">
+            {% for task in todo %}
+            <li id="todo-task-{{ task['id'] }}" class="list-group-item">
+                <div class="d-flex flex-row align-items-center">
+                    <div class="flex-fill">{{ task['description'] }}</div>
+                    <button type="button" class="btn btn-outline-danger mx-1" data-bs-toggle="modal" data-bs-target="#delete-task-dialog-{{ task['id'] }}">
+                        Delete
+                    </button>
+                    <a href="#">
+                        <button class="btn btn-outline-primary mx-1">Edit</button>
+                    </a>
+                    <a href="/tasks/{{ task['id'] }}/done">
+                        <button class="btn btn-success mx-1">Done</button>
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
-<div id="task-list" class="px-3 pt-2">
-    <ul class="list-group">
-        {% for task in g.tasks %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>{{ task['description'] }}</div>
-            <div class="btn-group"
-                 role="group"
-                 aria-label="basic mixed styles example">
-                <a class="btn btn-outline-success" href="{{ url_for('tasks.complete') }}">
-                    DONE
-                </a>
-                <button type="button" class="btn btn-outline-danger">delete</button>
+<div class="mt-4 mx-5">
+    <div class="d-flex flex-row align-items-center">
+        <div class="flex-fill">
+            <h1 class="fw-semibold">Completed</h1>
+        </div>
+    </div>
+    <div id="completed-list">
+        <ul class="list-group">
+            {% for task in done %}
+            <li id="completed-task-{{ task['id'] }}" class="list-group-item">
+                <div class="d-flex flex-row align-items-center">
+                    <div class="flex-fill text-secondary text-decoration-line-through">{{ task['description'] }}</div>
+                    <button type="button" class="btn btn-outline-danger mx-1" data-bs-toggle="modal" data-bs-target="#delete-task-dialog-{{ task['id'] }}">
+                        Delete
+                    </button>
+                    <a href="#">
+                        <button class="btn btn-outline-primary mx-1">Edit</button>
+                    </a>
+                    <a href="/tasks/{{ task['id'] }}/undone">
+                        <button class="btn btn-outline-secondary mx-1">Not Done</button>
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div id="create-task-dialog" class="modal fade" tabindex="-1" aria-labelledby="create-task-modal-label">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="create" method="post">
+                <div class="modal-header">
+                    <h5 id="create-task-modal-label" class="modal-title">New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label" for="description">Description</label>
+                    <input class="form-control" id="description" type="text" name="description" placeholder="Buy milk">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-primary" value="Create">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% for task in tasks %}
+<div id="delete-task-dialog-{{ task['id'] }}" class="modal fade" tabindex="-1" aria-labelledby="delete-task-modal-label-{{ task['id'] }}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="delete-task-modal-label-{{ task['id'] }}" class="modal-title">Delete Task?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </li>
-        {% endfor %}
-    </ul>
+            <div class="modal-body">
+                <p>Are you sure you want to delete task "{{ task['description'] }}"?</p>
+                <p>This action can not be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="/tasks/{{ task['id'] }}/delete">
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
+{% endfor %}
 {% endblock %}

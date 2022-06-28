@@ -1,27 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="py-4 px-4 vw-30 position-absolute top-50 start-50 translate-middle rounded-4 bg-secondary">
+<div class="position-absolute top-50 start-50 translate-middle">
+    <h2 class="text-center fw-bold">{% block title %}Sign Up{% endblock %}</h2>
     <form action="register" method="post">
-        <div class="container">
-            <div class="row">
-                <label for="usernameInput" class="form-label">Username</label>
-                <input type="text"
-                       class="form-control"
-                       id="usernameInput"
-                       name="username">
+        <div class="container py-2">
+            <div class="row my-2">
+                <label class="form-label" for="username">Username</label>
+                <input class="form-control" id="username" type="text" name="username">
             </div>
-
-            <div class="row">
-                <label for="passwordInput" class="form-label">Password</label>
-                <input type="password"
-                       class="form-control"
-                       id="passwordInput"
-                       name="password">
+            <div class="row my-2">
+                <label class="form-label" for="password">Password</label>
+                <input class="form-control" id="password" type="password" name="password">
             </div>
-
-            <div class="row mt-4">
-                <input type="submit" class="btn btn-primary" value="Register">
+            <div class="row align-items-center my-3">
+                <div class="col">
+                    <input class="btn btn-primary w-100 align-middle" type="submit" value="Sign Up">
+                </div>
+                <div class="col-8">
+                    <span>Already have an account? <a href="{{ url_for('auth.login') }}">Log In</a></span>
+                </div>
             </div>
         </div>
     </form>

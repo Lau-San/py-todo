@@ -1,0 +1,4 @@
+include pytodo/schema.sql
+graft pytodo/static
+graft pytodo/templates
+global-exclude *.pyc

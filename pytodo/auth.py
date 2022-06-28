@@ -18,7 +18,7 @@ def register():
         if not username:
             error = 'Username is required.'
         elif not password:
-            error = 'Password is required'
+            error = 'Password is required.'
 
         if error is None:
             try:
@@ -34,7 +34,6 @@ def register():
                 return redirect(url_for('auth.login'))
 
         flash(error)
-        print(f'Error: {error}')
 
     return render_template('auth/register.html')
 
@@ -49,14 +48,14 @@ def login():
         user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
 
         if user is None:
-            error = 'Incorrect username'
+            error = 'Incorrect username.'
         elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password'
+            error = 'Incorrect password.'
 
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('tasks.index'))
+            return redirect(url_for('index'))
 
         flash(error)
 

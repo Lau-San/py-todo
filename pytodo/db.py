@@ -42,28 +42,3 @@ def init_app(app: flask.Flask):
     app.teardown_appcontext(close_db)
     # Add a command that can be called with the flask command.
     app.cli.add_command(init_db_command)
-
-# --------------------
-
-
-# def connect(db: str):
-#     con = sqlite3.connect(db)
-#     cur = con.cursor()
-#     return con, cur
-#
-#
-# def add_task(desc: str):
-#     """Add task to the database."""
-#     con, cur = connect('task.db')
-#     cur.execute('INSERT INTO tasks VALUES (?,?)', (desc, 'FALSE'))
-#     con.commit()
-#     con.close()
-#
-#
-# def get_pending_tasks():
-#     """Return a list of all tasks that are not done."""
-#     con, cur = connect('task.db')
-#     cur.execute('SELECT * FROM tasks')
-#     print(cur.fetchall())
-#     con.commit()
-#     con.close()
