@@ -1,1 +1,1 @@
-web: gunicorn pytodo:create_app()
+web: gunicorn pytodo:app
