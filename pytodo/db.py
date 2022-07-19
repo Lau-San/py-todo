@@ -38,8 +38,11 @@ def close_db(e=None):
 def init_db():
     """Clear existing data and create tables."""
     db = get_db()
+    cur = db.cursor()
     with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
+        # db.executescript(f.read().decode('utf8'))
+        cur.execute(f.read().decode('utf8'))
+        db.commit()
 
 
 @click.command('init-db')
