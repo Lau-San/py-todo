@@ -2,15 +2,15 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS task;
 
 CREATE TABLE user (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE task (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
-    description TEXT,
-    done INTEGER,
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    description TEXT NOT NULL,
+    done BOOLEAN NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user (id)
 );
