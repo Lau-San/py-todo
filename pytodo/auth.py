@@ -1,5 +1,7 @@
 import functools
 
+import psycopg2.errors as db_errors
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
 from werkzeug.security import check_password_hash, generate_password_hash
 from pytodo.db import get_db
@@ -12,7 +14,10 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         db = get_db()
+        cur = db.cursor()
+
         error = None
 
         if not username:
@@ -22,12 +27,12 @@ def register():
 
         if error is None:
             try:
-                db.execute(
-                    'INSERT INTO user (username, password) VALUES (?, ?)',
+                cur.execute(
+                    'INSERT INTO users (username, password) VALUES (%s, %s);',
                     (username, generate_password_hash(password))
                 )
                 db.commit()
-            except db.IntegrityError:
+            except db_errors.UniqueViolation:
                 error = f'{username} is already registered.'
             else:
                 print(f'User {username} added to the database.')
