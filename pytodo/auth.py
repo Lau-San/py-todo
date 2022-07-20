@@ -84,13 +84,12 @@ def load_logged_in_user():
     else:
         db = get_db()
         with db.cursor() as cur:
-            cur.execute('SELECT * FROM user WHERE id = %s', (user_id,))
+            cur.execute('SELECT * FROM users WHERE id = %s', (user_id,))
             user = cur.fetchall()[0]
             g.user = {
                 'id': user[0],
                 'username': user[1]
             }
-        print(f'Loading user data:\n{g.user}')
 
 
 def login_required(view):
