@@ -15,9 +15,6 @@ def register():
         username = request.form['username']
         password = request.form['password']
 
-        db = get_db()
-        cur = db.cursor()
-
         error = None
 
         if not username:
@@ -27,11 +24,13 @@ def register():
 
         if error is None:
             try:
-                cur.execute(
-                    'INSERT INTO users (username, password) VALUES (%s, %s);',
-                    (username, generate_password_hash(password))
-                )
-                db.commit()
+                db = get_db()
+                with db.cursor() as cur:
+                    cur.execute(
+                        'INSERT INTO users (username, password) VALUES (%s, %s);',
+                        (username, generate_password_hash(password))
+                    )
+                    db.commit()
             except db_errors.UniqueViolation:
                 error = f'{username} is already registered.'
             else:
@@ -50,12 +49,11 @@ def login():
         password = request.form['password']
 
         db = get_db()
-        cur = db.cursor()
+        with db.cursor() as cur:
+            cur.execute('SELECT * FROM users WHERE username = %s;', (username,))
+            search = cur.fetchall()
 
         error = None
-
-        cur.execute('SELECT * FROM users WHERE username = %s', (username,))
-        search = cur.fetchall()
 
         if len(search) < 1:
             error = 'Incorrect username.'
@@ -84,7 +82,15 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute('SELECT * FROM user WHERE id = ?', (user_id,)).fetchone()
+        db = get_db()
+        with db.cursor() as cur:
+            cur.execute('SELECT * FROM user WHERE id = %s', (user_id,))
+            user = cur.fetchall()[0]
+            g.user = {
+                'id': user[0],
+                'username': user[1]
+            }
+        print(f'Loading user data:\n{g.user}')
 
 
 def login_required(view):
