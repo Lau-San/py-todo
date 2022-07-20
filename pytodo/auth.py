@@ -48,21 +48,31 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         db = get_db()
+        cur = db.cursor()
+
         error = None
-        user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
 
-        if user is None:
+        cur.execute('SELECT * FROM users WHERE username = %s', (username,))
+        search = cur.fetchall()
+
+        if len(search) < 1:
             error = 'Incorrect username.'
-        elif not check_password_hash(user['password'], password):
+            flash(error)
+            return render_template('auth/login.html')
+
+        user = search[0]
+
+        if not check_password_hash(user[2], password):
             error = 'Incorrect password.'
+            flash(error)
+            return render_template('auth/login.html')
 
-        if error is None:
-            session.clear()
-            session['user_id'] = user['id']
-            return redirect(url_for('index'))
-
-        flash(error)
+        session.clear()
+        session['user_id'] = user[0]
+        print(session['user_id'])
+        return redirect(url_for('index'))
 
     return render_template('auth/login.html')
 
