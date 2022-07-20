@@ -1,5 +1,7 @@
 import functools
 
+import psycopg2.errors as db_errors
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
 from werkzeug.security import check_password_hash, generate_password_hash
 from pytodo.db import get_db
@@ -12,7 +14,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
+
         error = None
 
         if not username:
@@ -22,12 +24,14 @@ def register():
 
         if error is None:
             try:
-                db.execute(
-                    'INSERT INTO user (username, password) VALUES (?, ?)',
-                    (username, generate_password_hash(password))
-                )
-                db.commit()
-            except db.IntegrityError:
+                db = get_db()
+                with db.cursor() as cur:
+                    cur.execute(
+                        'INSERT INTO users (username, password) VALUES (%s, %s);',
+                        (username, generate_password_hash(password))
+                    )
+                    db.commit()
+            except db_errors.UniqueViolation:
                 error = f'{username} is already registered.'
             else:
                 print(f'User {username} added to the database.')
@@ -43,21 +47,30 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
         db = get_db()
+        with db.cursor() as cur:
+            cur.execute('SELECT * FROM users WHERE username = %s;', (username,))
+            search = cur.fetchall()
+
         error = None
-        user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
 
-        if user is None:
+        if len(search) < 1:
             error = 'Incorrect username.'
-        elif not check_password_hash(user['password'], password):
+            flash(error)
+            return render_template('auth/login.html')
+
+        user = search[0]
+
+        if not check_password_hash(user[2], password):
             error = 'Incorrect password.'
+            flash(error)
+            return render_template('auth/login.html')
 
-        if error is None:
-            session.clear()
-            session['user_id'] = user['id']
-            return redirect(url_for('index'))
-
-        flash(error)
+        session.clear()
+        session['user_id'] = user[0]
+        print(session['user_id'])
+        return redirect(url_for('index'))
 
     return render_template('auth/login.html')
 
@@ -69,7 +82,14 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute('SELECT * FROM user WHERE id = ?', (user_id,)).fetchone()
+        db = get_db()
+        with db.cursor() as cur:
+            cur.execute('SELECT * FROM users WHERE id = %s', (user_id,))
+            user = cur.fetchall()[0]
+            g.user = {
+                'id': user[0],
+                'username': user[1]
+            }
 
 
 def login_required(view):

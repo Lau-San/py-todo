@@ -11,7 +11,7 @@ def create_app(test_config=None):
     # Set default configuration
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'pytodo.sqlite'),
+        # DATABASE=os.path.join(app.instance_path, 'pytodo.sqlite'),
     )
 
     # Load instance config or test config
