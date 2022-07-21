@@ -12,20 +12,19 @@ from flask.cli import with_appcontext
 def get_db():
     """Return a connection to the database."""
     if 'db' not in g:
-        # TODO: Initialize database with PostgreSQL using host, database name, user and password.
-        # g.db = sqlite3.connect(
-        #     current_app.config['DATABASE'],
-        #     detect_types=sqlite3.PARSE_DECLTYPES
-        # )
-        g.db = psycopg2.connect(
-            host='localhost',
-            database='pytodo',
-            user=os.environ['DB_USERNAME'],
-            password=os.environ['DB_PASSWORD']
-        )
+        if os.environ['FLASK_ENV'] == 'development':
+            g.db = psycopg2.connect(
+                host='localhost',
+                database='pytodo',
+                user=os.environ['DB_USERNAME'],
+                password=os.environ['DB_PASSWORD']
+            )
+        else:
+            g.db = psycopg2.connect(
+                os.environ['DATABASE_URL'],
+                sslmode='require'
+            )
 
-        # TODO: Maybe remove this
-        # g.db.row_factory = sqlite3.Row
     return g.db
 
 
