@@ -6,7 +6,7 @@ This is a simple todo list web application I made with the purpose of learning t
 basics of making a web app with Python and Flask. I focused mainly on learning
 how Flask works.
 
-[Try it out](http://lausan.pythonanywhere.com/)
+[Try it out](https://py-simple-todo-list.herokuapp.com/)
 
 ## Features
 
